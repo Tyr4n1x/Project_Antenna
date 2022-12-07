@@ -30,4 +30,6 @@ function [u,l] = impedanceMatching(Z_0, K1_Ae, lambda)
     K = (1-s*j)/(1+s*j);
     theta = angle(K);
     l = lambda/(4*pi)*abs(theta);
+    
+    fprintf('Need to add a stub of length %0.2f cm at %0.2f cm from the generator. \n',l*10^2,u*10^2)
 end
