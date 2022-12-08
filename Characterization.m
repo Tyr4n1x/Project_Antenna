@@ -26,15 +26,13 @@ end
 s11_A = data.s11_A_dBMag ;
 s11_B = data.s11_B_dBMag ;
 
-figure('WindowState','maximized');
-% plot(s11_A.x*10^-9, dB2dec(s11_A.y) ), hold on
-% plot(s11_B.x*10^-9, dB2dec(s11_B.y) )
+figure();
 plot(s11_A.x*10^-9, s11_A.y ), hold on
 plot(s11_B.x*10^-9, s11_B.y )
-legend('Antenna A', 'Antenna B','Location','East','FontSize',14)
+legend('Antenna A', 'Antenna B','Location','East','FontSize',12)
 grid on, grid minor
-title('Reflection coefficient','FontSize',16)
-xlabel('Frequency [GHz]','FontSize',14), ylabel('s_{11} [dB]','FontSize',14)
+title('Reflection coefficient','FontSize',14)
+xlabel('Frequency [GHz]','FontSize',12), ylabel('s_{11} [dB]','FontSize',12)
 
 exportgraphics(gcf,'./Images/Reflection_Coefficient.png')
 
@@ -42,13 +40,13 @@ exportgraphics(gcf,'./Images/Reflection_Coefficient.png')
 VSWR_A = data.VSWR_A;
 VSWR_B = data.VSWR_B;
 
-figure('WindowState','maximized');
+figure();
 plot(VSWR_A.x*10^-9, VSWR_A.y), hold on
 plot(VSWR_B.x*10^-9, VSWR_B.y)
-legend('Antenna A', 'Antenna B','Location','SouthEast','FontSize',14)
+legend('Antenna A', 'Antenna B','Location','SouthEast','FontSize',12)
 grid on, grid minor
-title('Measured Voltage Standing Wave Ratio','FontSize',16)
-xlabel('Frequency [GHz]','FontSize',14), ylabel('VSWR [/]','FontSize',14)
+title('Measured Voltage Standing Wave Ratio','FontSize',14)
+xlabel('Frequency [GHz]','FontSize',12), ylabel('VSWR [/]','FontSize',12)
 ylim([0 10])
 
 exportgraphics(gcf,'./Images/VSWR_Measured.png')
@@ -57,37 +55,37 @@ exportgraphics(gcf,'./Images/VSWR_Measured.png')
 VSWR_A_calc = ( 1 + abs( dB2dec(s11_A.y) ) )./( 1 - abs( dB2dec(s11_A.y) ) );
 VSWR_B_calc = ( 1 + abs( dB2dec(s11_B.y) ) )./( 1 - abs( dB2dec(s11_B.y) ) );
 
-figure('WindowState','maximized');
+figure();
 plot(VSWR_A.x*10^-9, VSWR_A_calc), hold on
 plot(VSWR_B.x*10^-9, VSWR_B_calc)
-legend('Antenna A', 'Antenna B','Location','SouthEast','FontSize',14)
+legend('Antenna A', 'Antenna B','Location','SouthEast','FontSize',12)
 grid on, grid minor
-title('Calculated Voltage Standing Wave Ratio','FontSize',16)
-xlabel('Frequency [GHz]','FontSize',14), ylabel('VSWR [/]','FontSize',14)
+title('Calculated Voltage Standing Wave Ratio','FontSize',14)
+xlabel('Frequency [GHz]','FontSize',12), ylabel('VSWR [/]','FontSize',12)
 ylim([0 10])
 
 exportgraphics(gcf,'./Images/VSWR_Calculated.png')
 
 % VSWR superimposed
 
-figure('WindowState','maximized'); t = tiledlayout(1,2,'TileSpacing','Compact','Padding','Compact');
+figure(); t = tiledlayout(1,2,'TileSpacing','Compact','Padding','Compact');
 nexttile; hold on
 plot(VSWR_A.x*10^-9, VSWR_A.y)
 plot(VSWR_A.x*10^-9, VSWR_A_calc)
 ylim([0 10])
 grid on, grid minor
-title('Antenna A','FontSize',16)
+title('Antenna A','FontSize',12)
 
 nexttile; hold on
 plot(VSWR_B.x*10^-9, VSWR_B.y)
 plot(VSWR_B.x*10^-9, VSWR_B_calc)
 ylim([0 10])
 grid on, grid minor
-title('Antenna B','FontSize',16)
+title('Antenna B','FontSize',12)
 
-xlabel(t,'Frequency [GHz]','FontSize',14), ylabel(t,'VSWR [/]','FontSize',14)
-title(t,'Voltage Standing Wave Ratio','FontSize',20)
-l = legend('Measured', 'Calculated','FontSize',14);
+xlabel(t,'Frequency [GHz]','FontSize',12), ylabel(t,'VSWR [/]','FontSize',12)
+title(t,'Voltage Standing Wave Ratio','FontSize',14)
+l = legend('Measured', 'Calculated','FontSize',12);
 l.Layout.Tile = 'North';
 linkaxes(t.Children,'xy')
 
@@ -106,34 +104,38 @@ freq_center_B = s11_B.x( idx_B(2) );
 idx_center = idx_A(2);
 
     % bandwidth
-    %(-->  domain where VSWR < 2 ?)
-    % or interpolate s11 and take -3dB
     
-% p_A = polyfit(s11_A.x*10^-9, s11_A.y,3); fit_A = polyval(p_A, s11_A.x*10^-9);
-% p_B = polyfit(s11_A.x*10^-9, s11_A.y,3); fit_B = polyval(p_B, s11_B.x*10^-9);
+f = linspace(0,3,10^4); % [GHz]
+y_A = interp1(VSWR_A.x*10^-9, VSWR_A.y,f,'Linear');
+p_A = InterX([f;y_A],[f;2*ones(1,length(f))]);
+y_B = interp1(VSWR_B.x*10^-9, VSWR_B.y,f,'Linear');
+p_B = InterX([f;y_B],[f;2*ones(1,length(f))]);
 
-figure('WindowState','maximized'); t = tiledlayout(1,2,'TileSpacing','Compact','Padding','Compact');
+BW_A = p_A(1,4) - p_A(1,3); fprintf('Bandwidth of Antenna A: %0.2f MHz \n',BW_A*10^3)
+BW_B = p_B(1,4) - p_B(1,3); fprintf('Bandwidth of Antenna B: %0.2f MHz \n',BW_B*10^3)
+
+figure(); t = tiledlayout(1,2,'TileSpacing','Compact','Padding','Compact');
 nexttile; hold on
-plot(s11_A.x*10^-9, s11_A.y)
-plot(s11_A.x(idx_A)*10^-9, s11_A.y(idx_A),'ro')
-% plot(s11_A.x*10^-9, fit_A)
-ylim([-45, 5])
+plot(VSWR_A.x*10^-9, VSWR_A.y)
+yline(2,'r:')
+plot(p_A(1,3:4),p_A(2,3:4),'ro')
+ylim([0 10])
 grid on, grid minor
-title('Antenna A','FontSize',16)
+title('Antenna A','FontSize',12)
 
 nexttile; hold on
-plot(s11_B.x*10^-9, s11_B.y)
-plot(s11_B.x(idx_B)*10^-9, s11_B.y(idx_B),'ro')
-% plot(s11_B.x*10^-9, fit_B)
-ylim([-45, 5])
+plot(VSWR_B.x*10^-9, VSWR_B.y)
+yline(2,'r:')
+plot(p_B(1,3:4),p_B(2,3:4),'ro')
+ylim([0 10])
 grid on, grid minor
-title('Antenna B','FontSize',16)
+title('Antenna B','FontSize',12)
 
-xlabel(t,'Frequency [GHz]','FontSize',14), ylabel(t,'s_{11} [dB]','FontSize',14)
-title(t,'Center frequency and Bandwidth','FontSize',20)
+xlabel(t,'Frequency [GHz]','FontSize',12), ylabel(t,'VSWR [/]','FontSize',12)
+title(t,'Center frequency and Bandwidth','FontSize',14)
 linkaxes(t.Children,'xy')
 
-% exportgraphics(gcf,'./Images/CenterFrequency_Bandwidth.png')
+exportgraphics(gcf,'./Images/CenterFrequency_Bandwidth.png')
 
 %% Calculate Fresnel and Fraunhofer domains
 
@@ -160,5 +162,5 @@ legend('Antenna A', 'Antenna B','Location','Best')
 exportgraphics(gcf,'./Images/SmithChart_Before.png')
 
  %%  Impedance matching
- [u_A,l_A] = impedanceMatching(50, K1_A, lambda_A);
- [u_B,l_B] = impedanceMatching(50, K1_B, lambda_B);
+[u_A,l_A] = impedanceMatching(50, K1_A, lambda_A);
+[u_B,l_B] = impedanceMatching(50, K1_B, lambda_B);
