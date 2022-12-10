@@ -145,20 +145,18 @@ fprintf('Antenna B \t %0.4f MHz \t \t %0.4f MHz - %0.4f MHz \t %0.4f MHz \n',...
 fprintf('Antenna B \t %0.4f GHz \t \t %0.4f GHz - %0.4f GHz \t \t %0.4f MHz \n',...
         VSWR_B.x(idx_B(2))*10^-9,p_B(1,3),p_B(1,4), p_B(1,4)*10^3-p_B(1,3)*10^3 )
 
-freq_center_A = VSWR_A.x( idx_A(2) );
-freq_center_B = VSWR_B.x( idx_B(2) );
-save('./Data/Center_Frequency.mat','freq_center_A','freq_center_B');
-
+freq_center = VSWR_A.x( idx_A(2) );
 idx_center = idx_A(2);
 
+save('./Data/Center_Frequency.mat','freq_center','idx_center');
+
 %% Calculate Fresnel and Fraunhofer domains
+clc
 
 D = 16.9*10^-2; % [m]
-lambda_A = 3*10^8/freq_center_A; % [m]
-lambda_B = 3*10^8/freq_center_B; % [m]
+lambda = 3*10^8/freq_center; % [m]
 
-[R_Fresnel_A, R_Fraunhofer_A] = calculateRegions(D, lambda_A); % [m]
-[R_Fresnel_B, R_Fraunhofer_B] = calculateRegions(D, lambda_B); % [m]
+[R_Fresnel, R_Fraunhofer] = calculateRegions(D, lambda); % [m]
 
 %% Smith Chart
 
@@ -187,12 +185,11 @@ exportgraphics(gcf,'./Images/SmithChart_Before_Zoom.png')
 %% Impedance matching
 clc, close all
 
-[u_A,l_A] = impedanceMatching(50, K_A, lambda_A, 0.66, true);
+[u_A,l_A] = impedanceMatching(50, K_A, lambda, 0.66, true);
 
 exportgraphics(gcf,'./Images/Impedance_Matching_A.png')
 
-[u_B,l_B] = impedanceMatching(50, K_B, lambda_B, 0.66, true);
+[u_B,l_B] = impedanceMatching(50, K_B, lambda, 0.66, true);
 
 exportgraphics(gcf,'./Images/Impedance_Matching_B.png')
-
  

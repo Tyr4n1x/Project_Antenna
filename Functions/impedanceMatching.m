@@ -55,7 +55,8 @@ function [u,l] = impedanceMatching(Z_0, K1_Ae, lambda, vel_factor, do_plot)
 
         legend(['y_{start} = ', num2str( (1+K1_Ae)/(1-K1_Ae), '%0.2f')],...
                ['y_{2} = ', num2str(y, '%0.2f')],...
-               'Location','NorthEast')
+               'Location','NorthEast',...
+               'FontSize',12)
         
         p.GridValue = [50 20 10 5 4 3 2:-0.2:1.2 1:-0.1:0.1; Inf 50 20 10 5 5 5*ones(1,5) 2*ones(1,10)];
         p.Parent.Children(2).XLim = [-0.1 0.1];
