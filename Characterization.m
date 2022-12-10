@@ -20,9 +20,10 @@ for file = 1:length(matrixFilelist)
     end
 end
 
-%% Plot data
+%% Visualize data
 
-% Reflection coefficient
+    % Reflection coefficient
+    
 s11_A = data.s11_A_dBMag ;
 s11_B = data.s11_B_dBMag ;
 
@@ -36,7 +37,8 @@ xlabel('Frequency [GHz]','FontSize',12), ylabel('s_{11} [dB]','FontSize',12)
 
 exportgraphics(gcf,'./Images/Reflection_Coefficient.png')
 
-% VSWR measured
+    % VSWR measured
+    
 VSWR_A = data.VSWR_A;
 VSWR_B = data.VSWR_B;
 
@@ -51,7 +53,8 @@ ylim([0 10])
 
 exportgraphics(gcf,'./Images/VSWR_Measured.png')
 
-% VSWR calculated
+    % VSWR calculated
+    
 VSWR_A_calc = ( 1 + abs( dB2dec(s11_A.y) ) )./( 1 - abs( dB2dec(s11_A.y) ) );
 VSWR_B_calc = ( 1 + abs( dB2dec(s11_B.y) ) )./( 1 - abs( dB2dec(s11_B.y) ) );
 
@@ -66,7 +69,7 @@ ylim([0 10])
 
 exportgraphics(gcf,'./Images/VSWR_Calculated.png')
 
-% VSWR superimposed
+    % VSWR superimposed
 
 figure(); t = tiledlayout(1,2,'TileSpacing','Compact','Padding','Compact');
 nexttile; hold on
@@ -100,6 +103,7 @@ exportgraphics(gcf,'./Images/VSWR_Superimposed.png')
 
 freq_center_A = s11_A.x( idx_A(2) );
 freq_center_B = s11_B.x( idx_B(2) );
+save('./Data/Center_Frequency.mat','freq_center_A','freq_center_B');
 
 idx_center = idx_A(2);
 
@@ -146,21 +150,32 @@ lambda_B = 3*10^8/freq_center_B; % [m]
 [R_Fresnel_A, R_Fraunhofer_A] = calculateRegions(D,lambda_A); % [m]
 [R_Fresnel_B, R_Fraunhofer_B] = calculateRegions(D,lambda_B); % [m]
 
-%% Smith Chart 
-close all
+%% Smith Chart
 
 s11_A_complex = data.s11_A_Complex;
 s11_B_complex = data.s11_B_Complex;
 K1_A = s11_A_complex.y_real( idx_center ) + j*s11_A_complex.y_imag( idx_center );
 K1_B = s11_B_complex.y_real( idx_center ) + j*s11_B_complex.y_imag( idx_center );
 
-smithplot(K1_A,'ro','TitleTop','Smith Chart before impedance matching')
+figure();
+p = smithplot(K1_A,'ro',...
+            'TitleTop','Smith Chart before impedance matching',...
+            'TitleTopFontSizeMultiplier',1.5,...
+            'GridType','ZY');
 hold on
 smithplot(K1_B,'bo')
 legend('Antenna A', 'Antenna B','Location','Best')
 
 exportgraphics(gcf,'./Images/SmithChart_Before.png')
 
- %%  Impedance matching
+p.GridValue = [50 20 10 5 4 3 2:-0.2:1.2 1:-0.1:0.1; Inf 50 20 10 5 5 5*ones(1,5) 2*ones(1,10)];
+p.Parent.Children(2).XLim = [-0.1 0.1];
+p.Parent.Children(2).YLim = [-0.1 0.1];
+
+exportgraphics(gcf,'./Images/SmithChart_Before_Zoom.png')
+
+%% Impedance matching
+
 [u_A,l_A] = impedanceMatching(50, K1_A, lambda_A);
 [u_B,l_B] = impedanceMatching(50, K1_B, lambda_B);
+ 

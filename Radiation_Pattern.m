@@ -1,7 +1,7 @@
 clear all, close all, clc
 %% Import the data
 
-addpath('Data','Functions')
+addpath('Data','Functions','Images')
 
 T_A = readtable('Radiation_Pattern.xlsx','Range','A1:G74','Sheet',1);
 T_B = readtable('Radiation_Pattern.xlsx','Range','A1:G74','Sheet',2);
@@ -10,6 +10,22 @@ T_B = readtable('Radiation_Pattern.xlsx','Range','A1:G74','Sheet',2);
 
 phi = T_A.Azimut; phi(isnan(phi)) = [];
 theta = T_A.Elevation; theta(isnan(theta)) = [];
+
+%% Theoretical
+
+antenna = monopoleRadial();
+antenna.Height = 16.9*10^-2; % [m]
+antenna.Width = antenna.Height*10^-3; % [m]
+antenna.NumRadials = 4;
+antenna.RadialWidth = 3*10^-3; % [m]
+antenna.RadialLength = 15*10^-2; % [m]
+antenna.RadialTilt = 30; % [°]
+antenna.Conductor = metal('PEC');
+
+show(antenna)
+patternAzimuth(antenna, 1.16*10^9)
+patternElevation(antenna, 1.16*10^9)
+
 
 %% Polar plot Azimut
 
