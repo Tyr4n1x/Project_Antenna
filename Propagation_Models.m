@@ -22,7 +22,7 @@ xlabel('Distance from Tx [m]'); ylabel('Attenuation [dB]')
 grid on, grid minor
 title('Attenuation in function of distance')
 
-exportgraphics(gcf,'./Images/Attenuation_Distance.png')
+exportgraphics(gcf,'./Images/FreeSpace_Distance.png')
 
 x = d.';
 y = P.';
@@ -66,7 +66,43 @@ exportgraphics(gcf,'./Images/Polarization.png')
 
     %% Relative angle
 close all
-   
+
+theta = -90:15:90; % [°]
+P = [-45.1  -45.0   -55.8   -51.7   -44.3   -40.9   -36.8 ...
+     -35.1  -36.5   -38.0   -43.9   -54.8   -46.2]; % [dBm]
+attenuation = 10 - P; % transmit 10 dBm
+
+figure();
+polarplot( deg2rad(theta) ,attenuation)
+thetalim([theta(1) theta(end)]);
+
+exportgraphics(gcf,'./Images/FreeSpace_Relative_Angle.png')
+
+%% Two-ray model
+
+    %% position of hole
+
+
+P = [-37.9  -37.7   -37.8   -38.1   -37.9   -37.6];
+attenuation = 10 - P; % transmit 10 dBm
+
+figure();
+plot(attenuation)
+
+exportgraphics(gcf,'./Images/TwoRay_Position.png')
+
+    %% number of holes
+
+n_holes = 0:10;
+P = [-37.9	-37.6   -37.8   -38.1   -38.3   -38.7 ...
+     -38.2  -38.6   -38.6   -38.4   -38.3];
+attenuation = 10 - P; % transmit 10 dBm
+
+figure();
+plot(n_holes, attenuation)
+
+exportgraphics(gcf,'./Images/TwoRay_NumberHoles.png')
+
 
 %% Small-scale fading
     %% Extract the data

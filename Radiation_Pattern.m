@@ -8,7 +8,7 @@ T_B = readtable('Radiation_Pattern.xlsx','Range','A1:G74','Sheet',2);
 
 %% Format the Data
 
-phi = T_A.Azimut; phi(isnan(phi)) = [];
+phi = T_A.Azimuth; phi(isnan(phi)) = [];
 theta = T_A.Elevation; theta(isnan(theta)) = [];
 
 %% Theoretical
@@ -35,11 +35,11 @@ polarpattern(phi,T_A.Amplitude,...
 hold on
 polarpattern(phi,T_B.Amplitude,...
             'AngleAtTop',0,...
-            'TitleTop','Radiation Pattern in Azimut (zero elevation)');
+            'TitleTop','Radiation Pattern in Azimuth (zero elevation)');
         
 legend('Antenna A','Antenna B','Location','Best')
         
-exportgraphics(gcf,'./Images/Radiation_Pattern_Azimut.png')
+exportgraphics(gcf,'./Images/Radiation_Pattern_Azimuth.png')
 
 %% Polar plot Elevation
 
@@ -55,7 +55,7 @@ polarpattern(theta,T_B.Amplitude_1(1:length(theta)),...
             'AngleTickLabelFormat','180',...
             'MagnitudeAxisAngle',180,...
             'View','Top',...
-            'TitleTop','Radiation Pattern in Elevation (zero azimut)');
+            'TitleTop','Radiation Pattern in Elevation (zero azimuth)');
         
 legend('Antenna A','Antenna B','Location','Best')
         
