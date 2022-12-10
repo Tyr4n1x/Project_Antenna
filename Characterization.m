@@ -33,7 +33,7 @@ plot(s11_B.x*10^-9, s11_B.y )
 legend('Antenna A', 'Antenna B','Location','East','FontSize',12)
 grid on, grid minor
 title('Reflection coefficient','FontSize',14)
-xlabel('Frequency [GHz]','FontSize',12), ylabel('s_{11} [dB]','FontSize',12)
+xlabel('Frequency [GHz]','FontSize',12), ylabel('|s_{11}| [dB]','FontSize',12)
 
 exportgraphics(gcf,'./Images/Reflection_Coefficient.png')
 
@@ -77,35 +77,23 @@ plot(VSWR_A.x*10^-9, VSWR_A.y)
 plot(VSWR_A.x*10^-9, VSWR_A_calc)
 ylim([0 10])
 grid on, grid minor
-title('Antenna A','FontSize',12)
+title('Antenna A')
 
 nexttile; hold on
 plot(VSWR_B.x*10^-9, VSWR_B.y)
 plot(VSWR_B.x*10^-9, VSWR_B_calc)
 ylim([0 10])
 grid on, grid minor
-title('Antenna B','FontSize',12)
+title('Antenna B')
 
-xlabel(t,'Frequency [GHz]','FontSize',12), ylabel(t,'VSWR [/]','FontSize',12)
-title(t,'Voltage Standing Wave Ratio','FontSize',14)
-l = legend('Measured', 'Calculated','FontSize',12);
+xlabel(t,'Frequency [GHz]'), ylabel(t,'VSWR [/]')
+l = legend('Measured', 'Calculated');
 l.Layout.Tile = 'North';
 linkaxes(t.Children,'xy')
 
 exportgraphics(gcf,'./Images/VSWR_Superimposed.png')
 
 %% Bandwidth and center frequency 
-
-    % center frequency
-    
-[~,idx_A] = findpeaks(-s11_A.y,'MinPeakHeight',0.5*max(-s11_A.y));
-[~,idx_B] = findpeaks(-s11_B.y,'MinPeakHeight',0.5*max(-s11_B.y));
-
-freq_center_A = s11_A.x( idx_A(2) );
-freq_center_B = s11_B.x( idx_B(2) );
-save('./Data/Center_Frequency.mat','freq_center_A','freq_center_B');
-
-idx_center = idx_A(2);
 
     % bandwidth
     
@@ -115,14 +103,14 @@ p_A = InterX([f;y_A],[f;2*ones(1,length(f))]);
 y_B = interp1(VSWR_B.x*10^-9, VSWR_B.y,f,'Linear');
 p_B = InterX([f;y_B],[f;2*ones(1,length(f))]);
 
-BW_A = p_A(1,4) - p_A(1,3); fprintf('Bandwidth of Antenna A: %0.2f MHz \n',BW_A*10^3)
-BW_B = p_B(1,4) - p_B(1,3); fprintf('Bandwidth of Antenna B: %0.2f MHz \n',BW_B*10^3)
+BW_A = p_A(1,4) - p_A(1,3); 
+BW_B = p_B(1,4) - p_B(1,3);
 
 figure(); t = tiledlayout(1,2,'TileSpacing','Compact','Padding','Compact');
 nexttile; hold on
 plot(VSWR_A.x*10^-9, VSWR_A.y)
 yline(2,'r:')
-plot(p_A(1,3:4),p_A(2,3:4),'ro')
+plot(p_A(1,1:4),p_A(2,1:4),'ro')
 ylim([0 10])
 grid on, grid minor
 title('Antenna A','FontSize',12)
@@ -130,7 +118,7 @@ title('Antenna A','FontSize',12)
 nexttile; hold on
 plot(VSWR_B.x*10^-9, VSWR_B.y)
 yline(2,'r:')
-plot(p_B(1,3:4),p_B(2,3:4),'ro')
+plot(p_B(1,1:4),p_B(2,1:4),'ro')
 ylim([0 10])
 grid on, grid minor
 title('Antenna B','FontSize',12)
@@ -141,29 +129,51 @@ linkaxes(t.Children,'xy')
 
 exportgraphics(gcf,'./Images/CenterFrequency_Bandwidth.png')
 
+    % center frequency
+    
+[~,idx_A] = findpeaks(-VSWR_A.y,'MinPeakProminence',2.5); idx_A = idx_A(idx_A>15); % to cut the diverging domain in the beginning
+[~,idx_B] = findpeaks(-VSWR_B.y,'MinPeakProminence',2.5); idx_B = idx_B(idx_B>15); % to cut the diverging domain in the beginning
+
+fprintf('Overview \n')
+fprintf('Antenna \t Center frequency \t Region \t \t \t \t \t \t Bandwidth \n')
+fprintf('Antenna A \t %0.4f MHz \t \t %0.4f MHz - %0.4f MHz \t %0.4f MHz \n',...
+        VSWR_A.x(idx_A(1))*10^-6, p_A(1,1)*10^3, p_A(1,2)*10^3, p_A(1,2)*10^3-p_A(1,1)*10^3 )
+fprintf('Antenna A \t %0.4f GHz \t \t %0.4f GHz - %0.4f GHz \t \t %0.4f MHz \n',...
+        VSWR_A.x(idx_A(2))*10^-9, p_A(1,3), p_A(1,4), p_A(1,4)*10^3-p_A(1,3)*10^3 )
+fprintf('Antenna B \t %0.4f MHz \t \t %0.4f MHz - %0.4f MHz \t %0.4f MHz \n',...
+        VSWR_B.x(idx_B(1))*10^-6, p_B(1,1)*10^3, p_B(1,2)*10^3, p_B(1,2)*10^3-p_B(1,1)*10^3 )
+fprintf('Antenna B \t %0.4f GHz \t \t %0.4f GHz - %0.4f GHz \t \t %0.4f MHz \n',...
+        VSWR_B.x(idx_B(2))*10^-9,p_B(1,3),p_B(1,4), p_B(1,4)*10^3-p_B(1,3)*10^3 )
+
+freq_center_A = VSWR_A.x( idx_A(2) );
+freq_center_B = VSWR_B.x( idx_B(2) );
+save('./Data/Center_Frequency.mat','freq_center_A','freq_center_B');
+
+idx_center = idx_A(2);
+
 %% Calculate Fresnel and Fraunhofer domains
 
 D = 16.9*10^-2; % [m]
 lambda_A = 3*10^8/freq_center_A; % [m]
 lambda_B = 3*10^8/freq_center_B; % [m]
 
-[R_Fresnel_A, R_Fraunhofer_A] = calculateRegions(D,lambda_A); % [m]
-[R_Fresnel_B, R_Fraunhofer_B] = calculateRegions(D,lambda_B); % [m]
+[R_Fresnel_A, R_Fraunhofer_A] = calculateRegions(D, lambda_A); % [m]
+[R_Fresnel_B, R_Fraunhofer_B] = calculateRegions(D, lambda_B); % [m]
 
 %% Smith Chart
 
 s11_A_complex = data.s11_A_Complex;
 s11_B_complex = data.s11_B_Complex;
-K1_A = s11_A_complex.y_real( idx_center ) + j*s11_A_complex.y_imag( idx_center );
-K1_B = s11_B_complex.y_real( idx_center ) + j*s11_B_complex.y_imag( idx_center );
+K_A = s11_A_complex.y_real( idx_center ) + j*s11_A_complex.y_imag( idx_center );
+K_B = s11_B_complex.y_real( idx_center ) + j*s11_B_complex.y_imag( idx_center );
 
 figure();
-p = smithplot(K1_A,'ro',...
+p = smithplot(K_A,'ro',...
             'TitleTop','Smith Chart before impedance matching',...
             'TitleTopFontSizeMultiplier',1.5,...
             'GridType','ZY');
 hold on
-smithplot(K1_B,'bo')
+smithplot(K_B,'bo')
 legend('Antenna A', 'Antenna B','Location','Best')
 
 exportgraphics(gcf,'./Images/SmithChart_Before.png')
@@ -175,7 +185,14 @@ p.Parent.Children(2).YLim = [-0.1 0.1];
 exportgraphics(gcf,'./Images/SmithChart_Before_Zoom.png')
 
 %% Impedance matching
+clc, close all
 
-[u_A,l_A] = impedanceMatching(50, K1_A, lambda_A);
-[u_B,l_B] = impedanceMatching(50, K1_B, lambda_B);
+[u_A,l_A] = impedanceMatching(50, K_A, lambda_A, 0.66, true);
+
+exportgraphics(gcf,'./Images/Impedance_Matching_A.png')
+
+[u_B,l_B] = impedanceMatching(50, K_B, lambda_B, 0.66, true);
+
+exportgraphics(gcf,'./Images/Impedance_Matching_B.png')
+
  
