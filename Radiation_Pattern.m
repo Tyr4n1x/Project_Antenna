@@ -63,8 +63,9 @@ exportgraphics(gcf,'./Images/Radiation_Pattern_Elevation.png')
 
 %% Gain
 
-lambda_A = 0.2584; % [m]
-lambda_B = 0.2617; % [m]
+load('./Data/Center_Frequency.mat')
+
+lambda = 3*10^8/freq_center; % [m]
 
 Att_cable = 15 - 13.38; % [dB]
 P_Rx_A = -32.2; % [dBm]
@@ -72,8 +73,8 @@ P_Rx_B = -30.3; % [dBm]
 E = 370*10^-3; % [V/m]
 
 syms G
-eqn_A = E == sqrt( 10^(P_Rx_A/10) * 10^-3 * (480*pi)/lambda_A^2 * 1/(10^(G/10)) * 1/(10^(Att_cable/10)) );
-eqn_B = E == sqrt( 10^(P_Rx_B/10) * 10^-3 * (480*pi)/lambda_B^2 * 1/(10^(G/10)) * 1/(10^(Att_cable/10)) );
+eqn_A = E == sqrt( 10^(P_Rx_A/10) * 10^-3 * (480*pi)/lambda^2 * 1/(10^(G/10)) * 1/(10^(Att_cable/10)) );
+eqn_B = E == sqrt( 10^(P_Rx_B/10) * 10^-3 * (480*pi)/lambda^2 * 1/(10^(G/10)) * 1/(10^(Att_cable/10)) );
 
 eq_A = 20*log10(E*10^3) == 47.8 + 10*log10(G) + 10*log10( 10^(P_Rx_A/10)*10^-6 ) - 20*log10(3*10^-3);
 

@@ -6,8 +6,8 @@ addpath('Data','Functions','Images')
 load('./Data/Center_Frequency.mat')
 
 D = 16.9*10^-2; % [m]
-lambda_B = 3*10^8/freq_center; % [m]
-[R_Fresnel_B, R_Fraunhofer_B] = calculateRegions(D,lambda_B); % [m]
+lambda = 3*10^8/freq_center; % [m]
+[R_Fresnel, R_Fraunhofer] = calculateRegions(D,lambda); % [m]
 
 d = [3.81	 3.23    2.63    2.03    1.43    0.83]; % [m]
 P = [-35.9  -36.8   -35.6   -31.8   -29.1   -24.1]; % [dBm]
@@ -22,7 +22,7 @@ fit = fun(coeff,d1);
 figure(); hold on
 plot(d, P, '*')
 plot(d1, fit, 'b')
-xline([R_Fresnel_B R_Fraunhofer_B],'r')
+xline([R_Fresnel R_Fraunhofer],'r')
 xlabel('Distance from Tx [m]'); ylabel('Received power [dBm]')
 grid on, grid minor
 axis([0 4 -40 -10])
@@ -75,7 +75,7 @@ P = [-37.9  -37.7   -37.8   -38.1   -37.9   -37.6];
 figure();
 plot(P,'*--')
 grid on, grid minor
-xticks(1:length(P)); xticklabels({'@Tx','@Tx+1','@Tx+2','@Tx+3','@Tx+4','@Tx+5'})
+xticks(1:length(P)); xticklabels({'No hole','@Tx','@Tx+1','@Tx+2','@Tx+3','@Tx+4'})
 xlim([0.5 length(P)+0.5]); ylim([-40 -35])
 xlabel('Position of hole')
 ylabel('Received power [dBm]')
@@ -105,6 +105,16 @@ exportgraphics(gcf,'./Images/TwoRay_NumberHoles.png')
 
 rel_diff = abs( max(P) - min(P) ) / abs( max(P) );
 fprintf('The relative difference between the highest and lowest received power is %0.2f%%. \n', rel_diff*100)
+
+    %% Criterion
+    
+load('./Data/Center_Frequency.mat')
+
+lambda = 3*10^8/freq_center; % [m]
+height = 1.5; % [m]
+
+criterium = (20*height*height)/lambda;
+fprintf('The Two-Ray model is only valid from %0.2f m onwards. \n', criterium)
 
 %% Small-scale fading
     %% Extract the data
@@ -137,6 +147,7 @@ figure(); hold on
 fplot(pdf, [0 2*dist.s])
 area(linspace(ci(1),ci(2)), pdf(linspace(ci(1),ci(2))), 'LineStyle','none')
 ylim( [0 0.075] )
+xticks(0:10:120)
 xlabel('Attenuation [dB]'); title({'PDF of the Rician Distribution',sprintf('(K = %0.3f)',K)})
 
 exportgraphics(gcf,'./Images/SmallScale_Rician_Distribution.png')
