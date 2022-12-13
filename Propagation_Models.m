@@ -41,26 +41,30 @@ figure();
 polarplot(deg2rad(theta), P, '*--')
 thetalim([theta(1) theta(end)]);
 thetaticks(theta);
-rlim([-65 -35])
+rticks(-60:5:-40); rticklabels({'-60','-55','-50','-45','-40',''}); rlim([-65 -35])
 title('Polarization mismatch')
+
+ax = gca;
+ax.ThetaDir = 'clockwise';
+ax.ThetaZeroLocation = 'top';
 
 exportgraphics(gcf,'./Images/FreeSpace_Polarization.png')
 
     %% Relative angle
 
 theta = -90:15:90; % [°]
-P = [-45.1  -45.0   -55.8   -51.7   -44.3   -40.9   -36.8 ...
-     -35.1  -36.5   -38.0   -43.9   -54.8   -46.2]; % [dBm]
+P = [-46.2  -54.8   -43.9   -38.0   -36.5   -35.1   -36.8   ...
+    -40.9   -44.3   -51.7   -55.8   -45.0   -45.1]; % [dBm]
 
 figure();
 polarplot(deg2rad(theta), P, '*--')
 thetalim([theta(1) theta(end)]);
 thetaticks(theta);
-rlim([-65 -35])
+rticks(-60:5:-40); rticklabels({'-60','','-50','','-40','','-40','','-30'}); rlim([-65 -35])
 title('Relative angle')
 
 ax = gca;
-ax.ThetaDir = 'counterclockwise';
+ax.ThetaDir = 'clockwise';
 ax.ThetaZeroLocation = 'top';
 ax.RAxisLocation = 0;
 
@@ -144,11 +148,10 @@ ci(1) = dist.s - 2*dist.sigma;
 ci(2) = dist.s + 2*dist.sigma;
 
 figure(); hold on
-fplot(pdf, [0 2*dist.s])
-area(linspace(ci(1),ci(2)), pdf(linspace(ci(1),ci(2))), 'LineStyle','none')
-ylim( [0 0.075] )
-xticks(0:10:120)
-xlabel('Attenuation [dB]'); title({'PDF of the Rician Distribution',sprintf('(K = %0.3f)',K)})
+h = histogram(attenuation, 17,'Normalization','pdf');
+fplot(pdf, [30 90], 'LineWidth',2)
+xticks(30:5:90)
+xlabel('Attenuation [dB]'); title({'PDF of the Rician distribution',sprintf('(K = %0.3f)',K)})
 
 exportgraphics(gcf,'./Images/SmallScale_Rician_Distribution.png')
 

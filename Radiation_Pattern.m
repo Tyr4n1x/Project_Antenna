@@ -27,37 +27,39 @@ patternAzimuth(antenna, 1.16*10^9)
 patternElevation(antenna, 1.16*10^9)
 
 
-%% Polar plot Azimut
+%% Polar plot Azimuth
 
 figure()
-polarpattern(phi,T_A.Amplitude,...
-            'AngleAtTop',0);
+polarplot(deg2rad(phi),T_A.Amplitude);
 hold on
-polarpattern(phi,T_B.Amplitude,...
-            'AngleAtTop',0,...
-            'TitleTop','Radiation Pattern in Azimuth (zero elevation)');
-        
-legend('Antenna A','Antenna B','Location','Best')
-        
+polarplot(deg2rad(phi),T_B.Amplitude)
+thetaticks(phi(1):15:phi(end));
+rlim([-65 -35]); rticks(-60:5:-40); rticklabels({'-60','','-50','','-40'})
+title('Radiation Pattern in Azimuth (zero elevation)')
+legend('Antenna A','Antenna B','Location','SouthOutside')
+
+ax = gca;
+ax.ThetaDir = 'clockwise';
+ax.ThetaZeroLocation = 'top';
+ax.RAxisLocation = 0;
+      
 exportgraphics(gcf,'./Images/Radiation_Pattern_Azimuth.png')
 
 %% Polar plot Elevation
 
 figure()
-polarpattern(theta,T_A.Amplitude_1(1:length(theta)),...
-            'AngleAtTop',0,...
-            'AngleTickLabelFormat','180',...
-            'MagnitudeAxisAngle',180,...
-            'View','Top');
+polarplot(deg2rad(theta),T_A.Amplitude_1(1:length(theta)) );
 hold on
-polarpattern(theta,T_B.Amplitude_1(1:length(theta)),...
-            'AngleAtTop',0,...
-            'AngleTickLabelFormat','180',...
-            'MagnitudeAxisAngle',180,...
-            'View','Top',...
-            'TitleTop','Radiation Pattern in Elevation (zero azimuth)');
-        
-legend('Antenna A','Antenna B','Location','Best')
+polarplot(deg2rad(theta),T_B.Amplitude_1(1:length(theta)) )
+thetaticks(theta(1):15:theta(end)); thetalim([theta(1) theta(end)])
+rticks(-60:5:-40); rticklabels({'-70','','-60','','-50','','-40','','-30'}); rlim([-70 -30])
+title('Radiation Pattern in Elevation (zero azimuth)')
+legend('Antenna A','Antenna B','Location','SouthOutside')
+
+ax = gca;
+ax.ThetaDir = 'clockwise';
+ax.ThetaZeroLocation = 'top';
+ax.RAxisLocation = 0;
         
 exportgraphics(gcf,'./Images/Radiation_Pattern_Elevation.png')
 

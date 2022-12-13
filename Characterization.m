@@ -71,7 +71,7 @@ exportgraphics(gcf,'./Images/VSWR_Calculated.png')
 
     % VSWR superimposed
 
-figure(); t = tiledlayout(1,2,'TileSpacing','Compact','Padding','Compact');
+figure('Position',[560 550 820 430]); t = tiledlayout(1,2,'TileSpacing','Compact','Padding','Compact');
 nexttile; hold on
 plot(VSWR_A.x*10^-9, VSWR_A.y)
 plot(VSWR_A.x*10^-9, VSWR_A_calc)
@@ -106,7 +106,7 @@ p_B = InterX([f;y_B],[f;2*ones(1,length(f))]);
 BW_A = p_A(1,4) - p_A(1,3); 
 BW_B = p_B(1,4) - p_B(1,3);
 
-figure(); t = tiledlayout(1,2,'TileSpacing','Compact','Padding','Compact');
+figure('Position',[560 550 820 430]); t = tiledlayout(1,2,'TileSpacing','Compact','Padding','Compact');
 nexttile; hold on
 plot(VSWR_A.x*10^-9, VSWR_A.y)
 yline(2,'r:')
@@ -124,7 +124,7 @@ grid on, grid minor
 title('Antenna B','FontSize',12)
 
 xlabel(t,'Frequency [GHz]','FontSize',12), ylabel(t,'VSWR [/]','FontSize',12)
-title(t,'Center frequency and Bandwidth','FontSize',14)
+title(t,'Bandwidth and center frequency','FontSize',14)
 linkaxes(t.Children,'xy')
 
 exportgraphics(gcf,'./Images/CenterFrequency_Bandwidth.png')
@@ -172,7 +172,7 @@ p = smithplot(K_A,'ro',...
             'GridType','ZY');
 hold on
 smithplot(K_B,'bo')
-legend('Antenna A', 'Antenna B','Location','Best')
+legend('Antenna A', 'Antenna B','Location','SouthWest')
 
 exportgraphics(gcf,'./Images/SmithChart_Before.png')
 
