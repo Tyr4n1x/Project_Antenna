@@ -15,17 +15,21 @@ theta = T_A.Elevation; theta(isnan(theta)) = [];
 
 antenna = monopoleRadial();
 antenna.Height = 16.9*10^-2; % [m]
-antenna.Width = antenna.Height*10^-3; % [m]
+antenna.Width = 1.5*10^-2; % [m]
 antenna.NumRadials = 4;
 antenna.RadialWidth = 3*10^-3; % [m]
-antenna.RadialLength = 15*10^-2; % [m]
-antenna.RadialTilt = 30; % [°]
+antenna.RadialLength = 17*10^-2; % [m]
+antenna.RadialTilt = 45; % [°]
 antenna.Conductor = metal('PEC');
 
+figure();
 show(antenna)
-patternAzimuth(antenna, 1.16*10^9)
-patternElevation(antenna, 1.16*10^9)
+exportgraphics(gcf,'./Images/Antenna_Model.png')
 
+figure();
+patternElevation(antenna, 1.16*10^9);
+
+exportgraphics(gcf,'./Images/Antenna_Model_Elevation.png')
 
 %% Polar plot Azimuth
 
