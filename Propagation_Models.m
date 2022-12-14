@@ -13,8 +13,8 @@ d = [3.81	 3.23    2.63    2.03    1.43    0.83]; % [m]
 P = [-35.9  -36.8   -35.6   -31.8   -29.1   -24.1]; % [dBm]
 
 opts = optimset('Display','off');
-fun = @(a,d) a(1)./d.^2 + a(2);
-a0 = [10 -10];
+fun = @(a,d) 10*log10( a./d.^2 );
+a0 = 10;
 coeff = lsqcurvefit(fun,a0,d,P,[],[], opts);
 d1 = linspace(floor(min(d)),ceil(max(d)));
 fit = fun(coeff,d1);
@@ -27,7 +27,7 @@ xlabel('Distance from Tx [m]'); ylabel('Received power [dBm]')
 grid on, grid minor
 axis([0 4 -40 -10])
 title('Received power in function of distance')
-legend('Measured values', 'Polyfit $\frac{a}{x^2} + b $','Fraunhofer / Fresnel limit',...
+legend('Measured values', 'Polyfit $\frac{a}{x^2}$','Fraunhofer / Fresnel limit',...
        'Location','SouthWest','Interpreter','Latex')
 
 exportgraphics(gcf,'./Images/FreeSpace_Distance.png')
