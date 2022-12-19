@@ -26,8 +26,18 @@ figure();
 show(antenna)
 exportgraphics(gcf,'./Images/Antenna_Model.png')
 
+p = patternElevation(antenna, 1.16*10^9);
+p = [p(end-90:end); p(1:91)];
 figure();
-patternElevation(antenna, 1.16*10^9);
+polarplot(deg2rad(linspace(-90,90,length(p))), p );
+thetaticks(theta(1):15:theta(end)); thetalim([theta(1) theta(end)]);
+rlim([-40 10]) 
+title('Simulated radiation pattern in Elevation')
+
+ax = gca;
+ax.ThetaDir = 'clockwise';
+ax.ThetaZeroLocation = 'top';
+ax.RAxisLocation = 0;
 
 exportgraphics(gcf,'./Images/Antenna_Model_Elevation.png')
 
